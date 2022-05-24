@@ -3,7 +3,7 @@
 	$servername = "mysql-ansoatc.alwaysdata.net";
     $username = "ansoatc";		//put your phpmyadmin username.(default is "root")
     $password = "anso20092001";			//if your phpmyadmin has a password put it here.(default is "root")
-    $dbname = "biometricattendace";
+    $dbname = "ansoatc_biometricattendace";
     
 	$conn = mysqli_connect($servername, $username, $password, $dbname);
 	
