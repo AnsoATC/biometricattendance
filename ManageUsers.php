@@ -1,4 +1,5 @@
 <?php
+/*This is test*/
 session_start();
 if (!isset($_SESSION['Admin-name'])) {
   header("location: login.php");
