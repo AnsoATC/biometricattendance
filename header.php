@@ -52,7 +52,7 @@
 	              }, 4000);
 	            </script> ';
 	    }
-	  }
+	}
 ?>
 <div class="topnav" id="myTopnav">
 	<a href="index.php">Users</a>

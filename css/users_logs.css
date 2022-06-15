@@ -1,0 +1,39 @@
+.time {
+    display: block;
+    position: absolute;
+    right: 10%;
+    margin-top: -25px;
+}
+
+.time input {
+    position: absolute !important;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    width: 1px;
+    border: 0;
+    overflow: hidden;
+}
+
+.time label {
+    background-color: #eaecf4;
+    border-color: #eaecf4;
+    color: #000;
+    font-size: 14px;
+    line-height: 1;
+    text-align: center;
+    padding: 6px 12px;
+    margin-right: -1px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease-in-out;
+}
+
+.time label:hover {
+    cursor: pointer;
+}
+
+.time input:checked+label {
+    background-color: #0275d8;
+    color: #fff;
+    box-shadow: none;
+    border-color: #0275d8;
+}

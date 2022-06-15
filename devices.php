@@ -1,93 +1,201 @@
 <?php
 session_start();
 if (!isset($_SESSION['Admin-name'])) {
-  header("location: login.php");
+    header("location: login.php");
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-	<title>Manage Devices</title>
-  	<meta charset="utf-8">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
-  	<link rel="icon" type="image/png" href="icons/atte1.jpg">
-	<link rel="stylesheet" type="text/css" href="css/devices.css"/>
 
-	<script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.js"
-	        integrity="sha1256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-	        crossorigin="anonymous">
-	</script>
-    <script type="text/javascript" src="js/bootbox.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap.js"></script>
-	<script src="js/dev_config.js"></script>
-	<script>
-	  	$(window).on("load resize ", function() {
-		    var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
-		    $('.tbl-header').css({'padding-right':scrollWidth});
-		}).resize();
-		
-		$(document).ready(function(){
-		    $.ajax({
-		      	url: "dev_up.php",
-		      	type: 'POST',
-		      	data: {
-		        'dev_up': 1,
-		  		}
-	      	}).done(function(data) {
-	  			$('#devices').html(data);
-    		});
-		});
-	</script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard - Attendance System </title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Custom toast -->
+    <link href="css/toast.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/devices.css">
+
 </head>
-<body>
-<?php include'header.php';?>
-<main>
-	<h1 class="slideInDown animated">Add a new Device/update/remove/Enable/Disable</h1>
 
-	<section class="container py-lg-5">
-		<div class="alert_dev"></div>
-		<!-- devices -->
-		<div class="row">
-			<div class="col-lg-12 mt-4">
-				<div class="panel">
-			      <div class="panel-heading" style="font-size: 19px;">Your Devices:
-			      	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#new-device" style="font-size: 18px; float: right; margin-top: -6px;">New Device</button>
-			      </div>
-			      <div class="panel-body">
-			      		<div id="devices"></div>
-			      </div>
-			    </div>
-			</div>
-		</div>
-		<!-- \\devices -->
-		<!-- New Devices -->
-		<div class="modal fade" id="new-device" tabindex="-1" role="dialog" aria-labelledby="New Device" aria-hidden="true">
-		  <div class="modal-dialog modal-dialog-centered" role="document">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <h3 class="modal-title" id="exampleModalLongTitle">Add new device:</h3>
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		          <span aria-hidden="true">&times;</span>
-		        </button>
-		      </div>
-		      <form action="" method="POST" enctype="multipart/form-data">
-			      <div class="modal-body">
-			      	<label for="User-mail"><b>Device Name:</b></label>
-			      	<input type="text" name="dev_name" id="dev_name" placeholder="Device Name..." required/><br>
-			      	<label for="User-mail"><b>Device Department:</b></label>
-			      	<input type="text" name="dev_dep" id="dev_dep" placeholder="Device Department..." required/><br>
-			      </div>
-			      <div class="modal-footer">
-			        <button type="button" name="dev_add" id="dev_add" class="btn btn-success">Create new Device</button>
-			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-			      </div>
-			  </form>
-		    </div>
-		  </div>
-		</div>
-		<!-- //New Devices -->
-	</section>
-</main>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <?php include 'partials/side_bar.php' ?>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <?php include 'partials/top_bar.php' ?>
+
+                <div id="toast" class="toast toast-info" data-autohide="false">
+                    <div class="toast-header">
+                        <strong class="mr-auto" id="toast-content">Connecté avec succès</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+                    </div>
+                    <div class="progress"></div>
+                </div>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid" style="position: relative;">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Liste des dispositifs</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#">organisation</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">dispositifs</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Liste des dispositifs d'empreinte digitale disponibles</h6>
+                            <div>
+                                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target=".editModal" data-mode="add"><i class="fas fa-plus fa-sm text-white-50"></i> Ajouter</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" id="devicesData">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border" role="status">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <?php include 'partials/footer_bottom.php' ?>
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <?php include 'components/scroll_to_top.php' ?>
+
+    <?php include 'components/logout_modal.php' ?>
+
+    <!-- Refresh Modal-->
+    <div class="modal fade refreshModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Mettre à jour le token</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-fw fa-window-close"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">Voulez-vous vraiment mettre à jour ce jeton d'appareil ?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary refreshToken" href="#">Rafraichir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change mode Modal-->
+    <div class="modal fade modeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Changer le mode</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-fw fa-window-close"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">Voulez-vous vraiment changer le mode de l'appareil ?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary cancelChangeMode" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary changeMode" href="#">Valider</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal editModal fade bd-example-modal-lg" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="editModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajouter un appareil</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-fw fa-window-close"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="mx-auto" id="device_edit_form" enctype="multipart/form-data" novalidate>
+                        <div class="form-group row">
+                            <label for="dep_sel" class="col-sm-3 col-form-label">Département</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="dep_sel" id="dep_sel" aria-placeholder="Sélectionner un département" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="dev_name" class="col-sm-3 col-form-label">Nom de l'appareil</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="dev_name" id="dev_name" class="form-control" placeholder="Entez un nom pour le lecteur d'empreinte" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary edit_device">Valider</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <script src="js/devices.js"></script>
+
 </body>
+
 </html>

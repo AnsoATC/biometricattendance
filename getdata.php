@@ -1,7 +1,7 @@
 <?php  
 //Connect to database
 require 'connectDB.php';
-date_default_timezone_set('Asia/Damascus');
+date_default_timezone_set('Africa/Porto-Novo');
 $d = date("Y-m-d");
 $t = date("H:i:sa");
 
@@ -22,7 +22,7 @@ if (isset($_GET['FingerID']) && isset($_GET['device_token'])) {
         $resultl = mysqli_stmt_get_result($result);
         if ($row = mysqli_fetch_assoc($resultl)){
             $device_mode = $row['device_mode'];
-            $device_dep = $row['device_dep'];
+            $device_dep = $row['dep_id'];
             if ($device_mode == 1) {
                 $sql = "SELECT * FROM users WHERE fingerprint_id=?";
                 $result = mysqli_stmt_init($conn);
@@ -54,7 +54,7 @@ if (isset($_GET['FingerID']) && isset($_GET['device_token'])) {
                                 //Login
                                 if (!$row = mysqli_fetch_assoc($resultl)){
 
-                                    $sql = "INSERT INTO users_logs (username, serialnumber, fingerprint_id, device_uid, device_dep,checkindate, timein, timeout) VALUES (? ,?, ?, ?, ?, ?, ?, ?)";
+                                    $sql = "INSERT INTO users_logs (username, serialnumber, fingerprint_id, device_uid,checkindate, timein, timeout) VALUES (? ,?, ?, ?, ?, ?, ?)";
                                     $result = mysqli_stmt_init($conn);
                                     if (!mysqli_stmt_prepare($result, $sql)) {
                                         echo "SQL_Error_Select_login1";
@@ -62,7 +62,7 @@ if (isset($_GET['FingerID']) && isset($_GET['device_token'])) {
                                     }
                                     else{
                                         $timeout = "00:00:00";
-                                        mysqli_stmt_bind_param($result, "sdisssss", $Uname, $Number, $fingerID, $device_uid, $device_dep, $d, $t, $timeout);
+                                        mysqli_stmt_bind_param($result, "sdissss", $Uname, $Number, $fingerID, $device_uid, $d, $t, $timeout);
                                         mysqli_stmt_execute($result);
 
                                         echo "login".$Uname;
@@ -116,14 +116,14 @@ if (isset($_GET['FingerID']) && isset($_GET['device_token'])) {
                         exit();
                     }
                     else{
-                        $sql = "INSERT INTO users ( device_uid, device_dep, fingerprint_id, user_date, add_fingerid) VALUES (?, ?, ?, CURDATE(), 0)";
+                        $sql = "INSERT INTO users ( device_uid, fingerprint_id, user_date, add_fingerid) VALUES (?, ?, CURDATE(), 0)";
                         $result = mysqli_stmt_init($conn);
                         if (!mysqli_stmt_prepare($result, $sql)) {
                             echo "SQL_Error_Select_add";
                             exit();
                         }
                         else{
-                            mysqli_stmt_bind_param($result, "sss", $device_uid, $device_dep, $fingerID );
+                            mysqli_stmt_bind_param($result, "ss", $device_uid, $fingerID );
                             mysqli_stmt_execute($result);
 
                             echo "succesful";

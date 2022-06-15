@@ -1,24 +1,33 @@
 <?php  
+session_start();
 //Connect to database
-require'connectDB.php';
+require 'connectDB.php';
 
 //Add user Fingerprint
 if (isset($_POST['Add_fingerID'])) {
 
     $fingerid = $_POST['fingerid'];
-    $dev_uid = $_POST['dev_id'];
+    $dev_uid = $_POST['dev_uid'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $number = $_POST['number'];
+    $gender = $_POST['gender'];
 
     if ($fingerid == 0) {
-        echo "Enter a Fingerprint ID!";
+        echo "Entrez un ID d'empreinte digitale !";
         exit();
     }
     if ($dev_uid == 0) {
-        echo "Select the User department!";
+        echo "Sélectionnez le département de l'utilisateur !";
+        exit();
+    }
+    if(empty($name) || empty($email) || empty($number) || empty($gender)){
+        echo "Veuillez remplir tous les champs";
         exit();
     }
     else{
         if ($fingerid > 0 && $fingerid < 128) {
-            $sql = "SELECT * FROM devices WHERE id=?";
+            $sql = "SELECT * FROM devices WHERE device_uid=?";
             $result = mysqli_stmt_init($conn);
             if (!mysqli_stmt_prepare($result, $sql)) {
                 echo "SQL_Error";
@@ -29,7 +38,6 @@ if (isset($_POST['Add_fingerID'])) {
                 mysqli_stmt_execute($result);
                 $resultl = mysqli_stmt_get_result($result);
                 if ($row = mysqli_fetch_assoc($resultl)) {
-                    $dev_name = $row['device_dep'];
                     $dev_uid = $row['device_uid'];
                 }
             }
@@ -66,18 +74,19 @@ if (isset($_POST['Add_fingerID'])) {
                             else{
                                 mysqli_stmt_bind_param($result, "s", $dev_uid);
                                 mysqli_stmt_execute($result);
-                                $sql = "INSERT INTO users ( fingerprint_id, fingerprint_select, user_date, device_uid, device_dep, del_fingerid , add_fingerid) VALUES (?, 1, CURDATE(), ?, ?, 0, 1)";
+                                $sql = "INSERT INTO users ( username, serialnumber, gender, email, fingerprint_id, fingerprint_select, user_date, device_uid, del_fingerid , add_fingerid, add_by) VALUES (?, ?, ?, ?, ?, 1, CURDATE(), ?, 0, 1, ?)";
                                 $result = mysqli_stmt_init($conn);
                                 if (!mysqli_stmt_prepare($result, $sql)) {
                                   echo "SQL_Error";
                                   exit();
                                 }
                                 else{
-                                    mysqli_stmt_bind_param($result, "iss", $fingerid, $dev_uid, $dev_name );
+                                    mysqli_stmt_bind_param($result, "ssssiss", $name, $number, $gender, $email, $fingerid, $dev_uid, $_SESSION['Admin-id']);
                                     mysqli_stmt_execute($result);
                                     echo 1;
                                     exit();
                                 }
+
                             }
                         }
                         else{
@@ -190,59 +199,60 @@ if (isset($_POST['Add'])) {
 // Update an existance user 
 if (isset($_POST['Update'])) {
 
+    $id = $_POST['id'];
     $Uname = $_POST['name'];
     $Number = $_POST['number'];
-    // $Email= $_POST['email'];
+    $Email= $_POST['email'];
     $dev_uid = $_POST['dev_uid'];
     $finger_id = $_POST['finger_id'];
 
     if (!empty($_POST['gender'])) {
         $Gender= $_POST['gender'];
         //check if there any selected user
-        $sql = "SELECT * FROM users WHERE fingerprint_select=1 AND device_uid=?";
+        $sql = "SELECT * FROM users WHERE id=?";
         $result = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($result, $sql)) {
           echo "SQL_Error";
           exit();
         }
         else{
-            mysqli_stmt_bind_param($result, "s", $dev_uid);
+            mysqli_stmt_bind_param($result, "s", $id);
             mysqli_stmt_execute($result);
             $resultl = mysqli_stmt_get_result($result);
             if ($row = mysqli_fetch_assoc($resultl)) {
 
                 if ($row['add_fingerid'] == 1) {
-                    echo "First, You need to add the User!";
+                    echo "Tout d'abord, vous devez ajouter l'utilisateur !";
                     exit();
                 }
                 else{
-                    if (empty($Uname) && empty($Number)) {
-                        echo "Empty Fields";
+                    if (empty($Uname) || empty($Number) || empty($Email)) {
+                        echo "Remplissez tous les champs";
                         exit();
                     }
                     else{
                         //check if there any user had already the Serial Number
-                        $sql = "SELECT serialnumber FROM users WHERE serialnumber=? AND fingerprint_select=0";
+                        $sql = "SELECT serialnumber FROM users WHERE serialnumber=? AND id!=?";
                         $result = mysqli_stmt_init($conn);
                         if (!mysqli_stmt_prepare($result, $sql)) {
                             echo "SQL_Error";
                             exit();
                         }
                         else{
-                            mysqli_stmt_bind_param($result, "d", $Number);
+                            mysqli_stmt_bind_param($result, "ds", $Number, $id);
                             mysqli_stmt_execute($result);
                             $resultl = mysqli_stmt_get_result($result);
                             if (!$row = mysqli_fetch_assoc($resultl)) {                 
                                 if (!empty($Uname)) {
 
-                                    $sql="UPDATE users SET username=?, serialnumber=?, gender=? WHERE fingerprint_select=1 AND device_uid=?";
+                                    $sql="UPDATE users SET username=?, serialnumber=?, email=?, gender=? WHERE id=?";
                                     $result = mysqli_stmt_init($conn);
                                     if (!mysqli_stmt_prepare($result, $sql)) {
                                         echo "SQL_Error_select_Fingerprint";
                                         exit();
                                     }
                                     else{
-                                        mysqli_stmt_bind_param($result, "sdss", $Uname, $Number, $Gender, $dev_uid );
+                                        mysqli_stmt_bind_param($result, "sdsss", $Uname, $Number, $email, $Gender, $id );
                                         mysqli_stmt_execute($result);
                                         $sql="UPDATE users SET fingerprint_select=0 WHERE device_uid=?";
                                         $result = mysqli_stmt_init($conn);

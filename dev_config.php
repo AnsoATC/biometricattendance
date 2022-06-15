@@ -5,31 +5,50 @@ require('connectDB.php');
 if (isset($_POST['dev_add'])) {
 
     $dev_name = $_POST['dev_name'];
-    $dev_dep = $_POST['dev_dep'];
+    $dep_sel = $_POST['dep_sel'];
 
     if (empty($dev_name)) {
-        echo '<p class="alert alert-danger">Please, Set the device name!!</p>';
+        echo 'Please, Set the device name !';
     }
-    elseif (empty($dev_dep)) {
-        echo '<p class="alert alert-danger">Please, Set the device department!!</p>';
+    elseif (empty($dep_sel)) {
+        echo 'Please, Set the device department !';
     }
     else{
         $token = random_bytes(4);
         $dev_token = bin2hex($token);
 
-        $sql = "INSERT INTO devices (device_name, device_dep, device_uid, device_date) VALUES(?, ?, ?, CURDATE())";
+        $sql = "INSERT INTO devices (device_name, dep_id, device_uid, device_date) VALUES(?, ?, ?, CURDATE())";
         $result = mysqli_stmt_init($conn);
         if ( !mysqli_stmt_prepare($result, $sql)){
             echo '<p class="alert alert-danger">SQL Error</p>';
         }
         else{
-            mysqli_stmt_bind_param($result, "sss", $dev_name, $dev_dep, $dev_token);
+            mysqli_stmt_bind_param($result, "sss", $dev_name, $dep_sel, $dev_token);
             mysqli_stmt_execute($result);
             echo 1;
         }
     mysqli_stmt_close($result); 
     mysqli_close($conn);
     }
+}
+elseif (isset($_POST['edit_dev'])) {
+
+    $dev_id = $_POST['dev_id'];
+    $dev_name = $_POST['dev_name'];
+    $dep_sel = $_POST['dep_sel'];
+
+    $sql = "UPDATE devices SET device_name=?, dep_id=? WHERE id=?";
+    $result = mysqli_stmt_init($conn);
+    if ( !mysqli_stmt_prepare($result, $sql)){
+        echo '<p class="alert alert-danger">SQL Error</p>';
+    }
+    else{
+        mysqli_stmt_bind_param($result, "sis", $dev_name, $dep_sel, $dev_id);
+        mysqli_stmt_execute($result);
+        echo 1;
+    }
+    mysqli_stmt_close($result); 
+    mysqli_close($conn);
 }
 elseif (isset($_POST['dev_del'])) {
 
